@@ -7,8 +7,9 @@ end
 git add ReKS_MMPC.m
 git commit -m "run check commit version"
 [status,cmdout]  = system('git rev-list --max-count=1 HEAD')
+mkdir([resultPath dataName '/' num2str(cmdout(1:10)) ])
 
-diary([resultPath dataName '/runDiary_' num2str(cmdout(1:10)) '.log'])
+diary([resultPath dataName '/' num2str(cmdout(1:10)) '/runDiary.log'])
 
 fprintf(['code version ' num2str(cmdout) '\n'])
 
