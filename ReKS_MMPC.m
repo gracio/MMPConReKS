@@ -1,12 +1,29 @@
-data = BR_Tumor.data';
-y = BR_Tumor.ER;
+resultPath = '/Volumes/Macintosh HD 2/work/benosWork/projects/MMPConReKS/results/'
 dataName = 'BR Tumor ER option 1&2';
-treeStruct = BR_Tumor.ReKS.treeStruct;
-varNames = BR_Tumor.genes;
+if ~isdir([resultPath dataName])
+    mkdir([resultPath dataName])
+end
+diary([resultPath dataName '/runDiary.log'])
 
+git rev-list --max-count=1 HEAD
+
+dataStruct = BR_Tumor;
+
+data = dataStruct.data';
+treeStruct = dataStruct.ReKS.treeStruct;
+varNames = dataStruct.genes;
+
+y = BR_Tumor.ER;
+
+
+% MMPConReKS options
+MRoptions.threshold1 =  0.05;
+MRoptions.threshold2 =  0.05;
 method = {'centroid','medoid','CA','PCA','FA'};
-thresh1 = 0.05;
-thresh2 = 0.05;
+MRoptions.method = method{i};
+MRoptions.plot = 1;
+
+MRfile
 
 % dataInfo
 dataInfo.yType = 'categorical';
