@@ -1,13 +1,25 @@
-resultPath = '/Volumes/Macintosh HD 2/work/benosWork/projects/MMPConReKS/results/'
-dataName = 'BR Tumor ER option 1&2';
-if ~isdir([resultPath dataName])
+resultPath = '/Volumes/Macintosh HD 2/work/benosWork/projects/MMPConReKS/results/'; % folder where I store results
+dataName = 'BR Tumor ER option 1&2'; % name of the experiment run
+if ~isdir([resultPath dataName]) % if this particular experiment hasn't been run, make a new directory
     mkdir([resultPath dataName])
 end
 
-git add ReKS_MMPC.m
-git commit -m "run check commit version"
-[status,cmdout]  = system('git rev-list --max-count=1 HEAD')
-mkdir([resultPath dataName '/' num2str(cmdout(1:10)) ])
+[status,cmdout] = system('git status -s') % check the current repository for modified files
+[A,B] = strread(cmdout,'%s%s','delimiter',' ') % parse output 
+
+if ~isempty(strmatch('M',A)) % see which files are modified, if any
+    tobeCommitted = strmatch('M',A);
+    for i=1:length(tobeCommitted)
+    system(['git add ' B{tobeCommitted(i)}])
+    end
+    git commit -m "check commit version before run"
+end
+
+
+
+[status,cmdout]  = system('git rev-list --max-count=1 HEAD') % check the latest commit version
+% if this version doesn't exist in result folder yet, make a new folder
+mkdir([resultPath dataName '/' num2str(cmdout(1:10)) ]) 
 
 diary([resultPath dataName '/' num2str(cmdout(1:10)) '/runDiary.log'])
 
