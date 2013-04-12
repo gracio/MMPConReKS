@@ -10,17 +10,20 @@ for i=1:length(selectedLeafs.ID)
 end
 
 hasNaN = logical(sum(toplot(:,3)));
+%legendLabels = {['ind(x";T|[cs\x] p < ' num2str(MRoptions.threshold1) ' & ind(x;T|x" p > ' num2str(MRoptions.threshold2)],['ind(x";T|[cs\x] p >= ' num2str(MRoptions.threshold1)  ' & ind(x;T|x" p <= ' num2str(MRoptions.threshold2)], 'NaN'}; % option 1 & 2
+legendLabels = {['ind(x";T|[cs\x] p < ' num2str(MRoptions.threshold1)],['ind(x";T|[cs\x] p >= ' num2str(MRoptions.threshold1)], 'NaN'}; % option 1
+%legendLabels = {['ind(x;T|x" p > ' num2str(MRoptions.threshold2)],['ind(x;T|x" p <= ' num2str(MRoptions.threshold2)], 'NaN'}; % option 2
 
 figure
 if hasNaN
     hBar = bar(toplot,'stacked')
     set(hBar,{'FaceColor'},colors);
-    legend(['ind(x";T|[cs\x] p < ' num2str(MRoptions.threshold1) ' & ind(x;T|x" p > ' num2str(MRoptions.threshold2)],['ind(x";T|[cs\x] p >= ' num2str(MRoptions.threshold1)  ' & ind(x;T|x" p <= ' num2str(MRoptions.threshold2)], 'NaN')
+    legend(legendLabels)
 else
     toplot(:,3)=[];
     hBar = bar(toplot,'stacked')
     set(hBar,{'FaceColor'},colors(1:2));
-    legend(['ind(x";T|[cs\x] p < ' num2str(MRoptions.threshold1) ' & ind(x;T|x" p > ' num2str(MRoptions.threshold2)],['ind(x";T|[cs\x] p >= ' num2str(MRoptions.threshold1)  ' & ind(x;T|x" p <= ' num2str(MRoptions.threshold2)])
+    legend(legendLabels(1:2))
 end
 
 title(runName)

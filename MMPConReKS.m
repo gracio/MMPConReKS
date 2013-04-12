@@ -50,9 +50,9 @@ for i=1:length(selectedLeafs.ID)
             %[selectedLeafs.xTcsxpP{i}(j) selectedLeafs.xTcsxpstat{i}(j) flag uniModelFit selectedLeafs.dev5csxp{i}(j) selectedLeafs.dev6csxxp{i}(j)]= testIndLogistic(y, [xData collapsedData csData], 1, [2 csIndex], dataInfo);
             
             % if parent node significance pass both option 1 and option 2 criteria, accept and move up to test older ancester
-            if (selectedLeafs.xTcsP{i}(j) < MRoptions.threshold1 ) & (selectedLeafs.xTxpP{i}(j) > MRoptions.threshold2) % option 1 and 2
-            % if (selectedLeafs.xTcsP{i}(j) < MRoptions.thresh % option 1
-            % if selectedLeafs.xTxpP{i}(j) > MRoptions.thresh % option 2
+            % if (selectedLeafs.xTcsP{i}(j) < MRoptions.threshold1 ) & (selectedLeafs.xTxpP{i}(j) > MRoptions.threshold2) % option 1 and 2
+            if selectedLeafs.xTcsP{i}(j) < MRoptions.thresh1 % option 1
+            % if selectedLeafs.xTxpP{i}(j) > MRoptions.thresh2 % option 2
             % if selectedLeafs.xTcsxpP{i}(j) > MRoptions.thresh % option 3
                                 
                 selectedLeafs.flag{i}(j)=1; % option 1 and 2
