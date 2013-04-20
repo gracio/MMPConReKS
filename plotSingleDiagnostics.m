@@ -54,20 +54,22 @@ for i=1:length(uqNode)
     k=k+1;
 end
 
-toremove = [];
-k = length(node2display)+1;
-for i=1:length(dup)
-    newcontents = contents{dup{i}(1)};
-    for j=2:length(dup{i})
-        newcontents = [newcontents '/' contents{dup{i}(j)}];
+if exist(dup)
+    toremove = [];
+    k = length(node2display)+1;
+    for i=1:length(dup)
+        newcontents = contents{dup{i}(1)};
+        for j=2:length(dup{i})
+            newcontents = [newcontents '/' contents{dup{i}(j)}];
+        end
+        node2display(k) = node2display(dup{i}(1));
+        contents{k} = newcontents;
+        toremove = [toremove dup{i}];
+        k=k+1;
     end
-    node2display(k) = node2display(dup{i}(1));
-    contents{k} = newcontents;
-    toremove = [toremove dup{i}];
-    k=k+1;
+    node2display(toremove) = [];
+    contents(toremove) = [];
 end
-node2display(toremove) = [];
-contents(toremove) = [];
 
 plotTreeSelectTreeLabel(treeStruct.nodeID, node2display, contents)
 saveas(gcf,[savePath 'singleVarSelectedVarOnTree'],'fig')
