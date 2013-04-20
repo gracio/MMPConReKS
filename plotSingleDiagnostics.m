@@ -42,5 +42,32 @@ for i=1:length(node2display)
     contents(i) = varNames(selectedLeafs_single.ID(i));
 end
 
+% if there are multiplle contents to be displayed at the same node,
+% concatenate them
+
+uqNode = unique(node2display);
+k=1;
+for i=1:length(uqNode)
+    if sum(ismember(node2display,uqNode(i)))>1
+        dup{k} = find(ismember(node2display,uqNode(i)));
+    end
+    k=k+1;
+end
+
+toremove = [];
+k = length(node2display)+1;
+for i=1:length(dup)
+    newcontents = contents{dup{i}(1)};
+    for j=2:length(dup{i})
+        newcontents = [newcontents '/' contents{dup{i}(j)}];
+    end
+    node2display(k) = node2display(dup{i}(1));
+    contents{k} = newcontents;
+    toremove = [toremove dup{i}];
+    k=k+1;
+end
+node2display(toremove) = [];
+contents(toremove) = [];
+
 plotTreeSelectTreeLabel(treeStruct.nodeID, node2display, contents)
 saveas(gcf,[savePath 'singleVarSelectedVarOnTree'],'fig')
