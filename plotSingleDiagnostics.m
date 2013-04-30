@@ -3,6 +3,7 @@ function plotSingleDiagnostics(data,y,varNames,treeStruct,selectedLeafs_single,s
 
 
 % plot clustergram
+if length(selectedLeafs_single.ID)>1
 t=selectedLeafs_single.pvalues(selectedLeafs_single.ID);
 for i=1:length(selectedLeafs_single.ID)
     rowlab{i} = [varNames{selectedLeafs_single.ID(i)} ' (' num2str(selectedLeafs_single.pvalues(selectedLeafs_single.ID(i)), '%0.1e') ')'];
@@ -20,6 +21,9 @@ for i=1:length(order)
 neworder(i) = strmatch(t,varNames(selectedLeafs_single.ID));
 end
 neworder = fliplr(neworder);
+else
+    neworder = 1:length(selectedLeafs_single.ID);
+end
 
 % plot correlation
 figure
@@ -54,7 +58,7 @@ for i=1:length(uqNode)
     k=k+1;
 end
 
-if exist(dup)
+if exist('dup')
     toremove = [];
     k = length(node2display)+1;
     for i=1:length(dup)
