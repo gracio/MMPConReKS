@@ -45,14 +45,16 @@ k=1;
 for i=1:length(uqNode)
     if sum(ismember(node2display,uqNode(i)))>1
         dup{k} = find(ismember(node2display,uqNode(i)));
+        k=k+1;
     end
-    k=k+1;
+    
 end
 
-if exist('dup')
+if exist('dup') 
     toremove = [];
     k = length(node2display)+1;
     for i=1:length(dup)
+
         newcontents = contents{dup{i}(1)};
         for j=2:length(dup{i})
             newcontents = [newcontents '/' contents{dup{i}(j)}];
@@ -65,6 +67,7 @@ if exist('dup')
     node2display(toremove) = [];
     contents(toremove) = [];
 end
-
+if ~isempty(node2display)
 plotTreeSelectTreeLabel(treeStruct.nodeID, node2display, contents)
+end
 saveas(gcf,[runPath 'clusterVarSelectedVarOnTree'],'fig')
