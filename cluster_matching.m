@@ -18,6 +18,6 @@ for i=1:length(clusterList1)
 end
 
 
-Jaccard
+
 % run bipartite_matching to figure out best match, and cost
 [val mi mj]=bipartite_matching(Jaccard);
