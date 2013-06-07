@@ -6,11 +6,18 @@ if dataInfo.varDim ==1
     data = data';
 end
 
+% if user specifies level limit to use
+if isfield(MRoptions, 'levelLimit')
+    fprintf(['levelLimit = ' num2str(MRoptions.levelLimit) '\n'])
+else % if not, let's not give a limit to the levels
+    MRoptions.levelLimit = Inf;
+end
+
 allNodes=treeStruct.groupMembers.Node;
 selectedLeafs.varNames = varNames;
 
-for m=1:length(MRoptions.threshold1)
-    for n=1:length(MRoptions.threshold2)
+for m=1:length(MRoptions.thresh1)
+    for n=1:length(MRoptions.thresh2)
         flagger = [];
         for i=1:length(selectedLeafs.ID)
             % if the ancestors haven't been initialized
@@ -50,23 +57,23 @@ for m=1:length(MRoptions.threshold1)
                 if ~isnan(collapsedData)
                     
                     if ~isfield(selectedLeafs,'xTcsP') || length(selectedLeafs.xTcsP) < i || length(selectedLeafs.xTcsP{i}) < j
-                    % option 1: test (x',T|[cs\x]), calculate parent node significance, using CIT of choice, to
-                    % modify to include up to 5 subgroups
-                    [selectedLeafs.xTcsP{i}(j) selectedLeafs.xTcsstat{i}(j) flag uniModelFit selectedLeafs.dev1cs{i}(j) selectedLeafs.dev2xcs{i}(j)]= testIndLogistic(y, [collapsedData csData], collapsed_xIndex, csIndex, dataInfo);
+                        % option 1: test (x',T|[cs\x]), calculate parent node significance, using CIT of choice, to
+                        % modify to include up to 5 subgroups
+                        [selectedLeafs.xTcsP{i}(j) selectedLeafs.xTcsstat{i}(j) flag uniModelFit selectedLeafs.dev1cs{i}(j) selectedLeafs.dev2xcs{i}(j)]= testIndLogistic(y, [collapsedData csData], collapsed_xIndex, csIndex, dataInfo);
                     end
                     
                     if  ~isfield(selectedLeafs,'xTxpP') || length(selectedLeafs.xTxpP) < i || length(selectedLeafs.xTxpP{i}) < j
-                    % option 2: test (x,T|x'), calculate parent node significance, using CIT of choice,
-                    [selectedLeafs.xTxpP{i}(j) selectedLeafs.xTxstat{i}(j) flag uniModelFit selectedLeafs.dev3xp{i}(j) selectedLeafs.dev4xxp{i}(j)]= testIndLogistic(y, [xData collapsedData], 1, 2, dataInfo);
+                        % option 2: test (x,T|x'), calculate parent node significance, using CIT of choice,
+                        [selectedLeafs.xTxpP{i}(j) selectedLeafs.xTxstat{i}(j) flag uniModelFit selectedLeafs.dev3xp{i}(j) selectedLeafs.dev4xxp{i}(j)]= testIndLogistic(y, [xData collapsedData], 1, 2, dataInfo);
                     end
                     
                     % option 3: test (x,T|[cs\x x']), calculate parent node significance, using CIT of choice,
                     %[selectedLeafs.xTcsxpP{i}(j) selectedLeafs.xTcsxpstat{i}(j) flag uniModelFit selectedLeafs.dev5csxp{i}(j) selectedLeafs.dev6csxxp{i}(j)]= testIndLogistic(y, [xData collapsedData csData], 1, [2 csIndex], dataInfo);
                     
                     % if parent node significance pass both option 1 and option 2 criteria, accept and move up to test older ancester
-                    if (selectedLeafs.xTcsP{i}(j) < MRoptions.threshold1(m) ) & (selectedLeafs.xTxpP{i}(j) > MRoptions.threshold2(n)) % option 1 and 2
-                        %if selectedLeafs.xTcsP{i}(j) < MRoptions.threshold1 % option 1
-                        % if selectedLeafs.xTxpP{i}(j) > MRoptions.threshold2 % option 2
+                    if (selectedLeafs.xTcsP{i}(j) < MRoptions.thresh1(m) ) && (selectedLeafs.xTxpP{i}(j) > MRoptions.thresh2(n)) && j <= MRoptions.levelLimit % option 1 and 2
+                        %if selectedLeafs.xTcsP{i}(j) < MRoptions.thresh1 % option 1
+                        % if selectedLeafs.xTxpP{i}(j) > MRoptions.thresh2 % option 2
                         % if selectedLeafs.xTcsxpP{i}(j) > MRoptions.thresh % option 3
                         flagger{i}(j)=1;
                         j=j+1;
@@ -83,9 +90,9 @@ for m=1:length(MRoptions.threshold1)
             selectedLeafs.groupVarSelected(m,n,i) = sum(flagger{i});
             %selectedLeafs.flagger{m,n,i} = flagger{i};
         end
-        selectedLeafs.groupVarThreshGrids(m,n,1) = MRoptions.threshold1(m);
-        selectedLeafs.groupVarThreshGrids(m,n,2) = MRoptions.threshold2(n);
-                
+        selectedLeafs.groupVarThreshGrids(m,n,1) = MRoptions.thresh1(m);
+        selectedLeafs.groupVarThreshGrids(m,n,2) = MRoptions.thresh2(n);
+        
     end
 end
 
