@@ -88,7 +88,7 @@ for k=1:length(cv.trainID)
     
     % run main file to perform variable selections across thresholds
     [cv.MR{k}] = MMPConReKS_main(trainCV,runPath,cv.minClustSize,cv.singleMMPCoptions,cv.groupMMPCoptions,cv.dataInfo,cv.runName);
-
+    
     % train SVM
     cv.MR{k} = trainSVMmodel(cv.MR{k});
     
@@ -107,40 +107,35 @@ for k=1:length(cv.trainID)
     
 end
 
-if success==1
-    clear success
+% calculate stability
+fprintf(['calculating stability \n'])
+cv = calcStability(cv);
+
+fprintf(['creating summary statistics \n'])
+m=length(cv.groupMMPCoptions.thresh1);
+n=length(cv.groupMMPCoptions.thresh2);
+% create summary statistics averaged over CV runs:
+for k=1:length(cv.MR)
+    % summarize single variable selection cv accuracy
+    cv.singleAccuracy(k) = cv.testResult{k}.singleAccuracy;
     
-    % calculate stability
-    fprintf(['calculating stability \n'])
-    cv = calcStability(cv);
-    
-    fprintf(['creating summary statistics \n'])
-    m=length(cv.groupMMPCoptions.thresh1);
-    n=length(cv.groupMMPCoptions.thresh2);
-    % create summary statistics averaged over CV runs:
-    for k=1:length(cv.MR)
-        % summarize single variable selection cv accuracy
-        cv.singleAccuracy(k) = cv.testResult{k}.singleAccuracy;
-        
-        for i=1:length(cv.groupMMPCoptions.method)
-            % summarize group variable selection cv accuracy
-            cv.accuracy{i}(:,:,k) = cv.testResult{k}.accuracy{i};
-            % summarize group variable mean and max cluster sizes
-            cv.meanClustSize{i} = mean(getFieldByThresh(cv.MR{k}.selectedLeafs{i},cv.MR{k},1:m,1:n,1:length(cv.MR{k}.ID),'size'),3);
-            cv.maxClustSize{i} = max(getFieldByThresh(cv.MR{k}.selectedLeafs{i},cv.MR{k},1:m,1:n,1:length(cv.MR{k}.ID),'size'),[],3);
-        end
+    for i=1:length(cv.groupMMPCoptions.method)
+        % summarize group variable selection cv accuracy
+        cv.accuracy{i}(:,:,k) = cv.testResult{k}.accuracy{i};
+        % summarize group variable mean and max cluster sizes
+        cv.meanClustSize{i} = mean(getFieldByThresh(cv.MR{k}.selectedLeafs{i},cv.MR{k},1:m,1:n,1:length(cv.MR{k}.ID),'size'),3);
+        cv.maxClustSize{i} = max(getFieldByThresh(cv.MR{k}.selectedLeafs{i},cv.MR{k},1:m,1:n,1:length(cv.MR{k}.ID),'size'),[],3);
     end
-    
-    % save this mat file
-    clear i k m n ans
-    save([cv.basicRunPath 'cv.mat'], '-v7.3')
-    
-    % generate plots for all CV runs:
-    fprintf(['plotting results \n'])
-    cv.thresh2plot = plotYYYAccStabClust(cv); % yyy line plots. using default option: plotting diagonal
-    plotAccuracyHeatmap(cv) % heatmap: accuracy + single
-    plotStabilityHeatmap(cv) % heatmap: stability  + single
-    plotMeanClustHeatmap(cv) % heatmap: mean size
-    plotMaxClustHeatmap(cv) % heatmap: max size
-    
 end
+
+% save this mat file
+clear i k m n ans
+save([cv.basicRunPath 'cv.mat'], '-v7.3')
+
+% generate plots for all CV runs:
+fprintf(['plotting results \n'])
+cv.thresh2plot = plotYYYAccStabClust(cv); % yyy line plots. using default option: plotting diagonal
+plotAccuracyHeatmap(cv) % heatmap: accuracy + single
+plotStabilityHeatmap(cv) % heatmap: stability  + single
+plotMeanClustHeatmap(cv) % heatmap: mean size
+plotMaxClustHeatmap(cv) % heatmap: max size
